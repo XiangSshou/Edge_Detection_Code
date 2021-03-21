@@ -1,0 +1,8 @@
+1. download zipped files of libpng and zlib
+2. unzip the files and change the names of the folders to libpng and zlib
+3. modify TreatWarningAsError in zlib.props
+4. open vstudio.sln in visual studio and upgrade the project as it suggests
+5. build release library
+6. add the directories with png.h and zlib.h into project property->Configuration properties->C/C++/General->Additional Include Directories
+7. add zlib.lib;libpng.lib (maybe libpng16.lib) in Linker->Input->Additional Dependencies。
+8. put the directory with zlib.lib and libpng.lib (maybe libpng16.lib) into Configuration properties->VC++ Directories->Library Directories
