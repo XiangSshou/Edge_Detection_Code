@@ -77,14 +77,25 @@ int process(string pathIn, string pathOut, string fileName) {
 
     FILE* fp = fopen(fromFile, "rb");
 
+
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+    if (!png_ptr)
+        return (ERROR);
     info_ptr = png_create_info_struct(png_ptr);
-    setjmp(png_jmpbuf(png_ptr));
+    if (!info_ptr) {
+        png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
+        return (ERROR);
+    }
+    if (setjmp(png_jmpbuf(png_ptr))) {
+        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+        fclose(fp);
+        return ERROR;
+    }
 
     png_init_io(png_ptr, fp);
     unsigned int width, height;
     int bit_depth, color_type, interlace_type, compression_type, filter_method;
-
+    
     png_read_info(png_ptr, info_ptr);
     png_get_IHDR(png_ptr, info_ptr, &width, &height,
         &bit_depth, &color_type, &interlace_type,
@@ -103,7 +114,6 @@ int process(string pathIn, string pathOut, string fileName) {
     if (color_type & PNG_COLOR_MASK_ALPHA)
         png_set_strip_alpha(png_ptr);
     png_read_update_info(png_ptr, info_ptr);
-
 
     png_get_IHDR(png_ptr, info_ptr, &width, &height,
         &bit_depth, &color_type, &interlace_type,
